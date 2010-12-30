@@ -1,0 +1,22 @@
+Library to interface with uBoost.com using cURL.
+
+Released under FREEBSD license
+Copyright eSchool Consultants 2010
+version 0.1
+
+Functionality:
+Add a student to uboost
+Add points to a student account
+
+Usage:
+$uboost = new uboost('https://example.uboost.com', 'username', 'password');
+
+$params = array();
+$params['user_name'] = 'student_user_name';
+
+$simple_xml_response = $uboost->add_student($params);
+
+$student_uboost_id = $simple_xml_response->id;
+
+$point_amount = 100;
+$uboost->add_points($student_uboost_id, $point_amount, 'Point Award Message');
