@@ -6,7 +6,7 @@
  *
  * Released under FREEBSD license
  *
- * @version 0.1
+ * @version 0.2
  * @copyright eSchool Consultants 2010
  * @author John Colvin <john.colvin@eschoolconsultants.com>
  *
@@ -40,6 +40,12 @@ class uboost
      */
     function add_student($params=array())
     {
+
+        // Username is required to create a student account
+        if (!isset($params['user_name'])) {
+            return false;
+        }
+
         foreach ($params as $key => $val) {
             $this->set_account_info($key, $val);
         }
@@ -58,10 +64,24 @@ class uboost
      */
     protected function post_to_uboost()
     {
+        return contact_uboost('POST');
+    }
+
+    protected function get_from_uboost()
+    {
+        return contact_uboost();
+    }
+
+    protected function contact_uboost($method='GET')
+    {
         $this->curl->url = $this->base_url . $this->curl->url;
         $ch = curl_init($this->curl->url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $this->curl->data);
+
+        if ($method == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $this->curl->data);
+        }
+
         curl_setopt($ch, CURLOPT_USERPWD, $this->username . ':' . $this->password);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
@@ -70,7 +90,9 @@ class uboost
         curl_close($ch);
 
         // The only valid response code for creating information is 201
-        if ($curl_info['http_code'] == '201') {
+        // The only valid response code for getting information is 200
+        if (($method == 'POST' && $curl_info['http_code'] == '201') ||
+            ($method == 'GET'  && $curl_info['http_code'] == '200')) {
             return new SimpleXMLElement($result);
         }
         return false;
@@ -148,6 +170,19 @@ class uboost
             return true;
         }
         return false;
+    }
+
+    /**
+     * Returns a simple XML element object with the student ID, sso-token and the expiration date of the token
+     * Returns false on failure
+     *
+     * @param integer $uboost_id The student's id number in the uboost system
+     * @author John Colvin
+     */
+    public function get_sso($uboost_id)
+    {
+        $this->curl->url = 'accounts/' . $uboost_id . '/sign_in_user.xml';
+        return $this->get_from_uboost();
     }
 
 }
