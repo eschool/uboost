@@ -2,21 +2,29 @@ Library to interface with uBoost.com using cURL.
 
 Released under FREEBSD license
 Copyright eSchool Consultants 2010
-version 0.1
+version 0.2
 
 Functionality:
 Add a student to uboost
 Add points to a student account
+Get a single sign on token
 
 Usage:
-$uboost = new uboost('https://example.uboost.com', 'username', 'password');
+    ### Initialize ###
+        $uboost = new uboost('https://example.uboost.com', 'username', 'password');
 
-$params = array();
-$params['user_name'] = 'student_user_name';
+    ### Add account ###
+        $params = array();
+        $params['user_name'] = 'student_user_name';
+        $simple_xml_response = $uboost->add_student($params);
 
-$simple_xml_response = $uboost->add_student($params);
+        $student_uboost_id = $simple_xml_response->id;
 
-$student_uboost_id = $simple_xml_response->id;
+    ### Add points ###
+        $point_amount = 100;
+        $uboost->add_points($student_uboost_id, $point_amount, 'Point Award Message');
 
-$point_amount = 100;
-$uboost->add_points($student_uboost_id, $point_amount, 'Point Award Message');
+    ### Get single sign on token ###
+        $sso_info = $uboost->get_sso($student_uboost_id);
+        $sso_token = $sso_info->sso-token;
+        $sso_expires = $sso_info->sso-token-expires-at;
