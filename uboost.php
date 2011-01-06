@@ -64,12 +64,12 @@ class uboost
      */
     protected function post_to_uboost()
     {
-        return contact_uboost('POST');
+        return $this->contact_uboost('POST');
     }
 
     protected function get_from_uboost()
     {
-        return contact_uboost();
+        return $this->contact_uboost();
     }
 
     protected function contact_uboost($method='GET')
