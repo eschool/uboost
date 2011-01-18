@@ -19,6 +19,11 @@ class uboost
 
     public function __construct($uboost_url, $uboost_username, $uboost_password)
     {
+        // Make sure that the URL has a trailing slash
+        if (substr($uboost_url, -1) != '/') {
+            $uboost_url = $uboost_url . '/';
+        }
+
         // uBoost account info
         $this->base_url = $uboost_url;
         $this->username = $uboost_username;
