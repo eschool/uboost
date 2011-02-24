@@ -6,8 +6,8 @@
  *
  * Released under FREEBSD license
  *
- * @version 0.2.1
- * @copyright eSchool Consultants 2010
+ * @version 0.3
+ * @copyright eSchool Consultants 2010-2011
  * @author John Colvin <john.colvin@eschoolconsultants.com>
  *
  */
@@ -196,5 +196,36 @@ class uboost
     {
         $this->curl->url = 'accounts/' . $uboost_id . '/sign_in_user.xml';
         return $this->get_from_uboost();
+    }
+
+    public function get_groups() {
+        $this->curl->url = 'groups.xml';
+        $group_xml = $this->get_from_uboost();
+
+        $groups = array();
+        foreach($group_xml->group as $group) {
+            $groups[] = $group;
+        }
+
+        return $groups;
+    }
+
+    public function create_group($name) {
+
+        if (empty($name)) {
+            return false;
+        }
+
+        $this->curl->url = 'groups.xml';
+        $this->set_group_info('name', $name);
+
+        if ($this->post_to_uboost()) {
+            return true;
+        }
+        return false;
+    }
+
+    protected function set_group_info($key, $val) {
+        $this->set_post_data($key, $val, 'group');
     }
 }

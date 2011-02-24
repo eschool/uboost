@@ -1,13 +1,15 @@
 Library to interface with uBoost.com using cURL.
 
 Released under FREEBSD license
-Copyright eSchool Consultants 2010
-version 0.2.1
+Copyright eSchool Consultants 2010-2011
+version 0.3
 
 Functionality:
 Add a student to uboost
 Add points to a student account
 Get a single sign on token
+Get groups
+Create a group
 
 Usage:
     ### Initialize ###
@@ -28,3 +30,9 @@ Usage:
         $sso_info = $uboost->get_sso($student_uboost_id);
         $sso_token = $sso_info->sso-token;
         $sso_expires = $sso_info->sso-token-expires-at;
+
+    ### Get groups ###
+        $groups = $uboost->get_groups();
+
+    ### Create a group ###
+        $uboost->create_group('API test');
