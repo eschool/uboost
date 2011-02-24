@@ -2,7 +2,7 @@ Library to interface with uBoost.com using cURL.
 
 Released under FREEBSD license
 Copyright eSchool Consultants 2010
-version 0.2
+version 0.2.1
 
 Functionality:
 Add a student to uboost

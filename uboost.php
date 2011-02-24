@@ -6,7 +6,7 @@
  *
  * Released under FREEBSD license
  *
- * @version 0.2
+ * @version 0.2.1
  * @copyright eSchool Consultants 2010
  * @author John Colvin <john.colvin@eschoolconsultants.com>
  *
@@ -19,11 +19,6 @@ class uboost
 
     public function __construct($uboost_url, $uboost_username, $uboost_password)
     {
-        // Make sure that the URL has a trailing slash
-        if (substr($uboost_url, -1) != '/') {
-            $uboost_url = $uboost_url . '/';
-        }
-
         // uBoost account info
         $this->base_url = $uboost_url;
         $this->username = $uboost_username;
@@ -77,10 +72,20 @@ class uboost
         return $this->contact_uboost();
     }
 
-    protected function contact_uboost($method='GET')
+    protected function contact_uboost($method='GET', $retry=false)
     {
-        $this->curl->url = $this->base_url . $this->curl->url;
-        $ch = curl_init($this->curl->url);
+        if ($retry === true) {
+            if (false !== strpos($this->curl->url, 'https://')) {
+                $ch = curl_init(str_replace('https://', 'http://', $this->curl->url));
+            }
+            else {
+                $ch = curl_init(str_replace('http://', 'https://', $this->curl->url));
+            }
+        }
+        else {
+            $this->curl->url = $this->base_url . $this->curl->url;
+            $ch = curl_init($this->curl->url);
+        }
 
         if ($method == 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -97,8 +102,11 @@ class uboost
         // The only valid response code for creating information is 201
         // The only valid response code for getting information is 200
         if (($method == 'POST' && $curl_info['http_code'] == '201') ||
-            ($method == 'GET'  && $curl_info['http_code'] == '200')) {
+            ($method == 'GET'  && ($curl_info['http_code'] == '200'))) {
             return new SimpleXMLElement($result);
+        }
+        else if ($curl_info['http_code'] == '302' && $retry === false) {
+            return $this->contact_uboost($method, true);
         }
         return false;
     }
@@ -189,5 +197,4 @@ class uboost
         $this->curl->url = 'accounts/' . $uboost_id . '/sign_in_user.xml';
         return $this->get_from_uboost();
     }
-
 }
