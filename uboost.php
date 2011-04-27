@@ -94,6 +94,7 @@ class uboost
 
         curl_setopt($ch, CURLOPT_USERPWD, $this->username . ':' . $this->password);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
 
         $result = curl_exec($ch);
         $curl_info = curl_getinfo($ch);
